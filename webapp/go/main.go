@@ -38,7 +38,7 @@ var (
 	ErrForbidden                error = fmt.Errorf("forbidden")
 	ErrGeneratePassword         error = fmt.Errorf("failed to password hash") //nolint:deadcode
 
-	generateIDINCode GenerateIDINCode
+	generateIDINCode *GenerateIDINCode
 )
 
 const (
@@ -55,7 +55,7 @@ type Handler struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	time.Local = time.FixedZone("Local", 9*60*60)
-	generateIDINCode = GenerateIDINCode{
+	generateIDINCode = &GenerateIDINCode{
 		id: 100000000001,
 	}
 
@@ -616,7 +616,7 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // initialize 初期化処理
 // POST /initialize
 func initialize(c echo.Context) error {
-	generateIDINCode = GenerateIDINCode{
+	generateIDINCode = &GenerateIDINCode{
 		id: 100000000001,
 	}
 	dbx, err := connectDB(true)
