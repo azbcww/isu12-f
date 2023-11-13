@@ -55,7 +55,7 @@ type Handler struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	time.Local = time.FixedZone("Local", 9*60*60)
-	generateId = GenerateID{
+	generateIDINCode = GenerateIDINCode{
 		id: 100000000001,
 	}
 
