@@ -38,7 +38,7 @@ var (
 	ErrForbidden                error = fmt.Errorf("forbidden")
 	ErrGeneratePassword         error = fmt.Errorf("failed to password hash") //nolint:deadcode
 
-	generateId GenerateID
+	generateIDINCode GenerateIDINCode
 )
 
 const (
@@ -616,7 +616,7 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // initialize 初期化処理
 // POST /initialize
 func initialize(c echo.Context) error {
-	generateId = GenerateID{
+	generateIdINCode = GenerateIDINCode{
 		id: 100000000001,
 	}
 	dbx, err := connectDB(true)
@@ -1860,17 +1860,17 @@ func noContentResponse(c echo.Context, status int) error {
 	return c.NoContent(status)
 }
 
-type GenerateID struct {
+type GenerateIDINCode struct {
 	mu sync.RWMutex
 	id int64
 }
 
 // generateID ユニークなIDを生成する
 func (h *Handler) generateID() (int64, error) {
-	generateId.mu.Lock()
-	defer generateId.mu.Unlock()
-	generateId.id++
-	return generateId.id, nil
+	generateIDINCode.mu.Lock()
+	defer generateIDINCode.mu.Unlock()
+	generateIDINCode.id++
+	return generateIDINCode.id, nil
 	// var updateErr error
 	// for i := 0; i < 100; i++ {
 	// 	res, err := h.DB.Exec("UPDATE id_generator SET id=LAST_INSERT_ID(id+1)")
