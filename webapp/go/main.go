@@ -56,7 +56,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	time.Local = time.FixedZone("Local", 9*60*60)
 	generateIDINCode = &GenerateIDINCode{
-		id: 100000000001,
+		Id: 100000000001,
 	}
 
 	e := echo.New()
@@ -617,7 +617,7 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // POST /initialize
 func initialize(c echo.Context) error {
 	generateIDINCode = &GenerateIDINCode{
-		id: 100000000001,
+		Id: 100000000001,
 	}
 	dbx, err := connectDB(true)
 	if err != nil {
@@ -1861,16 +1861,16 @@ func noContentResponse(c echo.Context, status int) error {
 }
 
 type GenerateIDINCode struct {
-	mu sync.RWMutex
-	id int64
+	Mu sync.RWMutex
+	Id int64
 }
 
 // generateID ユニークなIDを生成する
 func (h *Handler) generateID() (int64, error) {
-	generateIDINCode.mu.Lock()
-	defer generateIDINCode.mu.Unlock()
-	generateIDINCode.id++
-	return generateIDINCode.id, nil
+	generateIDINCode.Mu.Lock()
+	defer generateIDINCode.Mu.Unlock()
+	generateIDINCode.Id++
+	return generateIDINCode.Id, nil
 	// var updateErr error
 	// for i := 0; i < 100; i++ {
 	// 	res, err := h.DB.Exec("UPDATE id_generator SET id=LAST_INSERT_ID(id+1)")
