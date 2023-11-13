@@ -234,7 +234,7 @@ setup-nginx-for-alp:
 .PHONY: build
 build:
 	cd webapp/go && \
-	go build -o $(SERVICE_NAME);\
+	go build -o $(SERVICE_NAME)
 	sudo systemctl restart $(SERVICE_NAME).go.service
 
 .PHONY: fix
