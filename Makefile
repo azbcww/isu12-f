@@ -83,8 +83,8 @@ send-data: alp send-alp pt send-pt
 #練習環境
 .PHONY: bench
 bench: trun-access trun-slow
-	@cd bench && \
-	./bench -target-addr 127.0.0.1:443 2>&1 | tee /tmp/bench.txt
+	export ISUXBENCH_TARGET=127.0.0.1 && \
+	./bin/benchmarker --stage=prod --request-timeout=10s --initialize-request-timeout=60s
 
 .PHONY: alp
 alp:
