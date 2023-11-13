@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-//	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -56,7 +56,6 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	time.Local = time.FixedZone("Local", 9*60*60)
 	generateIDINCode = GenerateIDINCode{
-		mu: sync.RWMutex{},
 		id: 100000000001,
 	}
 
@@ -618,7 +617,6 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // POST /initialize
 func initialize(c echo.Context) error {
 	generateIDINCode = GenerateIDINCode{
-		mu: sync.RWMutex{},
 		id: 100000000001,
 	}
 	dbx, err := connectDB(true)
