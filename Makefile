@@ -6,7 +6,7 @@
 
 GIT_EMAIL = 46641274+azbcww@users.noreply.github.com
 GIT_USERNAME = azbcww
-GIT_REPO = git@github.com:azbcww/isucon12-qualify.git
+GIT_REPO = git@github.com:azbcww/isu12-q.git
 
 MYSQL_HOST=127.0.0.1
 MYSQL_PORT=3306
