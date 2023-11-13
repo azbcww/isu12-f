@@ -616,7 +616,7 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // initialize 初期化処理
 // POST /initialize
 func initialize(c echo.Context) error {
-	generateIdINCode = GenerateIDINCode{
+	generateIDINCode = GenerateIDINCode{
 		id: 100000000001,
 	}
 	dbx, err := connectDB(true)
