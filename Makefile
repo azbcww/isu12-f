@@ -14,6 +14,7 @@ MYSQL_DBNAME=isucondition
 MYSQL_PASS=isucon
 
 #書き換え不必要
+
 GIT_EMAIL = 46641274+azbcww@users.noreply.github.com
 GIT_USERNAME = isucon
 GIT_REPO = 
@@ -88,7 +89,12 @@ bench: trun-access trun-slow
 
 .PHONY: alp
 alp:
-	@sudo cat /var/log/nginx/access.log | alp json --sort sum -r -q --qs-ignore-values -o "count,1xx, 2xx, 3xx, 4xx, 5xx, method, uri, min, max, sum, avg" -m '/api/organizer/[0-9a-z\/]+, /api/player/[0-9a-z\/]+, /api/admin/[0-9a-z\/]+' > /tmp/alp.txt
+	sudo cat /var/log/nginx/access.log | \
+	alp json --sort sum -r -q --qs-ignore-values \
+	-o "count,1xx, 2xx, 3xx, 4xx, 5xx, method, uri, min, max, sum, avg" \
+	-m '/user/[0-9a-z]+/gacha/index,/user/[0-9a-z]+/gacha/draw,/user/[0-9a-z]+/present/index,/user/[0-9a-z]+/present/receive,/user/[0-9a-z]+/item,/user/[0-9a-z]+/card/addexp,/user/[0-9a-z]+/card,/user/[0-9a-z]+/reward,/user/[0-9a-z]+/home,/admin/user/[0-9a-z]+/ban,/admin/user/[0-9a-z]+'\
+	> /tmp/alp.txt
+	cat /tmp/alp.txt
 
 .PHONY: send-alp
 send-alp:
@@ -96,7 +102,7 @@ send-alp:
 
 .PHONY: alp-body
 alp-body:
-	@sudo cat /var/log/nginx/access.log | alp json --sort sum -r -q --qs-ignore-values -o "count, method, min_body, max_body, sum_body, avg_body" -m '/api/organizer/[0-9a-z\/]+, /api/player/[0-9a-z\/]+, /api/admin/[0-9a-z\/]+' > /tmp/alp-body.txt
+	@sudo cat /var/log/nginx/access.log | alp json --sort sum -r -q --qs-ignore-values -o "count, method, min_body, max_body, sum_body, avg_body" -m '/api/organizer/[0-9a-z]+, /api/player/[0-9a-z]+, /api/admin/[0-9a-z]+' > /tmp/alp-body.txt
 
 .PHONY: send-alp-body
 send-alp-body:
@@ -105,6 +111,7 @@ send-alp-body:
 .PHONY: pt
 pt:
 	@sudo pt-query-digest /var/log/mysql/mysql-slow.log > /tmp/pt-query-digest.txt
+	cat /tmp/pt-query-digest.txt
 
 .PHONY: send-pt
 send-pt:
@@ -235,3 +242,7 @@ fix:
 	git add .
 	git commit -m "fix"
 	git push origin main
+
+test:
+	echo 'aaa \\
+	bbb'
