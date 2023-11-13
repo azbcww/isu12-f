@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -52,6 +53,9 @@ type Handler struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	time.Local = time.FixedZone("Local", 9*60*60)
+	generateId = GenerateID{
+		id: 100000000001,
+	}
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -610,6 +614,9 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // initialize 初期化処理
 // POST /initialize
 func initialize(c echo.Context) error {
+	generateId = GenerateID{
+		id: 100000000001,
+	}
 	dbx, err := connectDB(true)
 	if err != nil {
 		return errorResponse(c, http.StatusInternalServerError, err)
@@ -1851,27 +1858,38 @@ func noContentResponse(c echo.Context, status int) error {
 	return c.NoContent(status)
 }
 
+type GenerateID struct {
+	mu sync.RWMutex
+	id int64
+}
+
+var generateId GenerateID
+
 // generateID ユニークなIDを生成する
 func (h *Handler) generateID() (int64, error) {
-	var updateErr error
-	for i := 0; i < 100; i++ {
-		res, err := h.DB.Exec("UPDATE id_generator SET id=LAST_INSERT_ID(id+1)")
-		if err != nil {
-			if merr, ok := err.(*mysql.MySQLError); ok && merr.Number == 1213 {
-				updateErr = err
-				continue
-			}
-			return 0, err
-		}
+	generateId.mu.Lock()
+	defer generateId.mu.Unlock()
+	generateId.id++
+	return generateId.id, nil
+	// var updateErr error
+	// for i := 0; i < 100; i++ {
+	// 	res, err := h.DB.Exec("UPDATE id_generator SET id=LAST_INSERT_ID(id+1)")
+	// 	if err != nil {
+	// 		if merr, ok := err.(*mysql.MySQLError); ok && merr.Number == 1213 {
+	// 			updateErr = err
+	// 			continue
+	// 		}
+	// 		return 0, err
+	// 	}
 
-		id, err := res.LastInsertId()
-		if err != nil {
-			return 0, err
-		}
-		return id, nil
-	}
+	// 	id, err := res.LastInsertId()
+	// 	if err != nil {
+	// 		return 0, err
+	// 	}
+	// 	return id, nil
+	// }
 
-	return 0, fmt.Errorf("failed to generate id: %w", updateErr)
+	// return 0, fmt.Errorf("failed to generate id: %w", updateErr)
 }
 
 // generateUUID UUIDの生成
