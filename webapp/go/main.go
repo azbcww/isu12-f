@@ -37,6 +37,8 @@ var (
 	ErrUnauthorized             error = fmt.Errorf("unauthorized user")
 	ErrForbidden                error = fmt.Errorf("forbidden")
 	ErrGeneratePassword         error = fmt.Errorf("failed to password hash") //nolint:deadcode
+
+	generateId GenerateID
 )
 
 const (
@@ -1862,8 +1864,6 @@ type GenerateID struct {
 	mu sync.RWMutex
 	id int64
 }
-
-var generateId GenerateID
 
 // generateID ユニークなIDを生成する
 func (h *Handler) generateID() (int64, error) {
