@@ -229,3 +229,9 @@ build:
 	cd webapp/go && \
 	go build -o $(SERVICE_NAME);\
 	sudo systemctl restart $(SERVICE_NAME).go.service
+
+.PHONY: fix
+fix:
+	git add .
+	git commit -m "fix"
+	git push origin main
