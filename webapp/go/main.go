@@ -38,7 +38,7 @@ var (
 	ErrForbidden                error = fmt.Errorf("forbidden")
 	ErrGeneratePassword         error = fmt.Errorf("failed to password hash") //nolint:deadcode
 
-	generateIDINCode *GenerateIDINCode
+	generateIDINCode GenerateIDINCode
 )
 
 const (
@@ -55,8 +55,9 @@ type Handler struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	time.Local = time.FixedZone("Local", 9*60*60)
-	generateIDINCode = &GenerateIDINCode{
-		Id: 100000000001,
+	generateIDINCode = GenerateIDINCode{
+		mu: sync.RWMutex{},
+		id: 100000000001,
 	}
 
 	e := echo.New()
@@ -616,8 +617,9 @@ func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, ob
 // initialize 初期化処理
 // POST /initialize
 func initialize(c echo.Context) error {
-	generateIDINCode = &GenerateIDINCode{
-		Id: 100000000001,
+	generateIDINCode = GenerateIDINCode{
+		mu: sync.RWMutex{},
+		id: 100000000001,
 	}
 	dbx, err := connectDB(true)
 	if err != nil {
@@ -1861,16 +1863,16 @@ func noContentResponse(c echo.Context, status int) error {
 }
 
 type GenerateIDINCode struct {
-	Mu sync.RWMutex
-	Id int64
+	mu sync.RWMutex
+	id int64
 }
 
 // generateID ユニークなIDを生成する
 func (h *Handler) generateID() (int64, error) {
-	generateIDINCode.Mu.Lock()
-	defer generateIDINCode.Mu.Unlock()
-	generateIDINCode.Id++
-	return generateIDINCode.Id, nil
+	generateIDINCode.mu.Lock()
+	defer generateIDINCode.mu.Unlock()
+	generateIDINCode.id++
+	return generateIDINCode.id, nil
 	// var updateErr error
 	// for i := 0; i < 100; i++ {
 	// 	res, err := h.DB.Exec("UPDATE id_generator SET id=LAST_INSERT_ID(id+1)")
